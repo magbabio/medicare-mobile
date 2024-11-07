@@ -32,7 +32,7 @@ export default function LoginScreen({ navigation }) {
       if (role === 'doctor') {
         navigation.replace('DoctorDashboard');
       } else {
-        Alert.alert(data.Data.Message);
+        Alert.alert('Por favor inicie sesión como paciente');
       }
     } catch (error) {
       Alert.alert(data.Data.Message);

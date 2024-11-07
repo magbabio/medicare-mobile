@@ -12,8 +12,10 @@ import {
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEye, faEyeSlash, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-
+import { registrationSchema } from '../schemas/PatientSchema';
 import { createPatientRequest } from '../services/patient/patientAPI';
+
+import z from 'zod';
 
 export default function RegisterScreen({ navigation }) {
   const [cedula, setCedula] = useState('');
@@ -28,12 +30,7 @@ export default function RegisterScreen({ navigation }) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleRegister = async () => {
-    if (password !== confirmPassword) {
-      Alert.alert('Error', 'Las contraseñas no coinciden');
-      return;
-    }
-  
-    const patientData = {
+    const formData = {
       cedula,
       firstName,
       lastName,
@@ -41,16 +38,24 @@ export default function RegisterScreen({ navigation }) {
       age,
       email,
       password,
+      confirmPassword,
     };
-  
+
     try {
-      const data = await createPatientRequest(patientData);
-      console.log(data.Data.message);
+      // Validar con el esquema de Zod
+      registrationSchema.parse(formData);
+      
+      // Si pasa la validación, continúa con el registro
+      const data = await createPatientRequest(formData);
       Alert.alert('Registro exitoso', 'Tu cuenta ha sido creada');
-      navigation.navigate('SignInScreenPatient'); 
+      navigation.navigate('SignInScreenPatient');
     } catch (error) {
-      console.log(error.message);
-      Alert.alert('Error', error.message);
+      if (error instanceof z.ZodError) {
+        // Mostrar el primer mensaje de error encontrado
+        Alert.alert('Error', error.errors[0].message);
+      } else {
+        Alert.alert('Error', 'Hubo un problema con el registro');
+      }
     }
   };
 

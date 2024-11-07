@@ -33,7 +33,7 @@ export default function LoginScreen({ navigation }) {
         navigation.replace('PatientDashboard');
       } 
        else {
-        Alert.alert(data.Data.Message);
+        Alert.alert('Por favor inicie sesión como doctor');
       }
     } catch (error) {
       Alert.alert(data.Data.Message);
