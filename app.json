@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "Medicare",
+    "slug": "Medicare",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "icon": "",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "web": {
+      "favicon": ""
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tuempresa.tuapp",
+      "buildNumber": "1.0.0"
+    },
+    "androidNavigationBar": {
+      "visible": "visible"
+    }
+  }
+}
