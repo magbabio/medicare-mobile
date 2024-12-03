@@ -15,6 +15,8 @@ import SignInScreenDoctor from './src/screens/SignInScreenDoctor';
 import RegisterScreen from './src/screens/RegisterScreen';
 import PatientDashboard from './src/screens/patient/PatientDashboard';
 import DoctorDashboard from './src/screens/doctor/DoctorDashboard';
+import ChooseSpecialty from './src/screens/patient/ChooseSpecialty';
+import BookAppointment from './src/screens/patient/BookAppointment';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -40,6 +42,8 @@ const App = () => {
               <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
               <Stack.Screen name="PatientDashboard" component={PatientDashboard} />
               <Stack.Screen name="DoctorDashboard" component={DoctorDashboard} />
+              <Stack.Screen name="ChooseSpecialty" component={ChooseSpecialty} />
+              <Stack.Screen name="BookAppointment" component={BookAppointment} />
             </Stack.Navigator>
           </NavigationContainer>
         </View>

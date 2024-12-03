@@ -3,7 +3,7 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView, Activit
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faUserMd, faCalendarAlt, faCalendarPlus, faClipboardList, faStar } from '@fortawesome/free-solid-svg-icons';
 
-export default function PatientDashboard({ navigation }) {
+export default function BookAppointment({ navigation }) {
   const [loading, setLoading] = useState(true);
 
   const [nextAppointment] = useState({
@@ -24,9 +24,9 @@ export default function PatientDashboard({ navigation }) {
 
       {/* Botones de Acción */}
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.actionButton} onPress={() => navigation.navigate('ChooseSpecialty')}>
+        <TouchableOpacity style={styles.actionButton}>
           <FontAwesomeIcon icon={faCalendarPlus} size={24} color="#FFFFFF" />
-          <Text style={styles.buttonText}>Agendar Cita</Text>
+          <Text style={styles.buttonText}>Hola</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
           <FontAwesomeIcon icon={faClipboardList} size={24} color="#FFFFFF" />

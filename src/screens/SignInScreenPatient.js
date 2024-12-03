@@ -24,8 +24,7 @@ export default function LoginScreen({ navigation }) {
   const handleLogin = async () => {
     try {
       const credentials = { email, password };
-      const data = await loginRequest(credentials);
-      
+      const data = await loginRequest(credentials);      
       // Obtener rol del usuario después del login
       const role = await getRoleFromToken();
 
@@ -36,6 +35,7 @@ export default function LoginScreen({ navigation }) {
         Alert.alert('Por favor inicie sesión como doctor');
       }
     } catch (error) {
+      console.log(error);
       Alert.alert(data.Data.Message);
     }
   };
