@@ -18,24 +18,22 @@ export default function ChooseSpecialty({ navigation }) {
     const fetchSpecialties = async () => {
       try {
         const response = await getSpecialties(); 
-        console.log(response);
 
-        // Verificar que response.data y response.data.Data existen
         if (response.Data) {
-          // Acceder al array de especialidades dentro de Data
           const specialtiesData = response.Data;
 
-          // Si hay especialidades, extraemos los nombres
-          if (specialtiesData && specialtiesData.length > 0) {
-            // Extraer los nombres de las especialidades
-            const specialtiesNames = specialtiesData.map(specialty => specialty.name);
+          if (specialtiesData.length > 0) {
+            const specialtiesNames = specialtiesData.map(specialty => ({
+              id: specialty.id,  
+              name: specialty.name,
+            }));
 
-            setSpecialties(specialtiesNames); // Establecer los nombres de las especialidades
+            setSpecialties(specialtiesNames);
           } else {
             Alert.alert('Error', 'No se encontraron especialidades.');
           }
         } else {
-          Alert.alert('Error', 'La respuesta de la API no contiene las especialidades esperadas.');
+          Alert.alert('Error', 'La respuesta de la API no contiene las especialidades esperadas o están mal formateadas.');
         }
       } catch (error) {
         console.log(error);
@@ -56,8 +54,9 @@ export default function ChooseSpecialty({ navigation }) {
         <FontAwesomeIcon icon={faArrowLeft} size={24} color="#2260ff" />
       </TouchableOpacity>
 
-      {/* Title */}
       <Text style={styles.title}>Agendar cita</Text>
+
+      <Text style={styles.subtitle}>Seleccione la especialidad</Text>
 
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
         {specialties.length > 0 ? (
@@ -65,9 +64,11 @@ export default function ChooseSpecialty({ navigation }) {
             <TouchableOpacity
               key={index}
               style={styles.specialtyButton}
-              onPress={() => navigation.navigate('SpecialtyDetails', { specialtyName: specialty })}
+              onPress={() => {
+                navigation.navigate('ChooseDoctor', { specialtyId: specialty.id, specialtyName: specialty.name });
+              }}
             >
-              <Text style={styles.specialtyText}>{specialty}</Text>
+              <Text style={styles.specialtyText}>{specialty.name}</Text>
             </TouchableOpacity>
           ))
         ) : (
@@ -83,9 +84,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     alignSelf: 'center',
-    width: '100%', // Ajustado para ocupar más espacio
-    maxWidth: 500, // Limitar un máximo para evitar que sea demasiado ancho
-    backgroundColor: '#ffffff', // Fondo blanco
+    width: '100%',
+    maxWidth: 500, 
+    backgroundColor: '#ffffff',
   },
   backButton: {
     position: 'absolute',
@@ -100,6 +101,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#2260ff',
   },
+  subtitle: {
+    fontSize: 18,
+    textAlign: 'center',
+    color: '#2260ff',
+    marginBottom: 20, 
+  },
   scrollViewContainer: {
     flexGrow: 1,
     marginTop: 20,
@@ -108,14 +115,14 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     marginBottom: 10,
-    backgroundColor: '#ecf1ff', // Mantenido el color de fondo de los botones
+    backgroundColor: '#ecf1ff',
     justifyContent: 'center',
     alignItems: 'center',
   },
   specialtyText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#2260ff', // Asegura que el texto sea legible
+    color: '#2260ff',
   },
   noSpecialtyText: {
     fontSize: 18,

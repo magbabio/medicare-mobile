@@ -1,38 +1,73 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faUser, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faClipboardList, faUserMd, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { getTodayAppointmentsForDoctor } from '../../services/appointment/appointmentAPI';
 
-export default function DoctorDashboard() {
-  // Datos simulados para las citas del día
-  const [todayAppointments] = useState([
-    { id: 1, patientName: 'Juan López', time: '10:00 AM', reason: 'Dolor de cabeza' },
-    { id: 2, patientName: 'María Pérez', time: '11:30 AM', reason: 'Chequeo general' },
-    { id: 3, patientName: 'Carlos García', time: '01:00 PM', reason: 'Consulta de seguimiento' },
-    { id: 4, patientName: 'Ana Ramírez', time: '02:30 PM', reason: 'Control de presión' },
-  ]);
+export default function DoctorDashboard({ navigation }) {
+  const [doctorName] = useState('Dr. Juan Pérez');
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const doctorId = 1; // Replace with actual doctor ID
+        const response = await getTodayAppointmentsForDoctor(doctorId);
+        console.log(response);
+        setAppointments(response.Data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointments();
+  }, []);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Dashboard del Doctor</Text>
+      <Text style={styles.welcomeText}>Bienvenido, {doctorName}</Text>
 
-      {/* Citas del día */}
+      {/* Botones de Acción */}
+      <View style={styles.buttonRow}>
+        <TouchableOpacity style={styles.actionButton} onPress={() => navigation.navigate('AppointmentSchedule')}>
+          <FontAwesomeIcon icon={faCalendarAlt} size={24} color="#FFFFFF" />
+          <Text style={styles.buttonText}>Agenda de Citas</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.actionButton} onPress={() => navigation.navigate('Reports')}>
+          <FontAwesomeIcon icon={faClipboardList} size={24} color="#FFFFFF" />
+          <Text style={styles.buttonText}>Reportes</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Citas de Hoy */}
       <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Citas de Hoy</Text>
-        <FlatList
-          data={todayAppointments}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.appointmentContainer}>
-              <FontAwesomeIcon icon={faUser} size={32} color="#2260ff" style={styles.icon} />
-              <View>
-                <Text style={styles.patientName}>{item.patientName}</Text>
-                <Text style={styles.appointmentTime}>Hora: {item.time}</Text>
-                <Text style={styles.reason}>Motivo: {item.reason}</Text>
+        <Text style={styles.sectionTitle}>Tus citas de hoy</Text>
+        <Text style={styles.dateText}>Lunes 9 de diciembre</Text>
+        {loading ? (
+          <Text style={styles.loadingText}>Cargando...</Text>
+        ) : appointments.length > 0 ? (
+          <FlatList
+            data={appointments}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.appointmentContainer}>
+                <FontAwesomeIcon icon={faUserMd} size={24} color="#2260ff" style={styles.icon} />
+                <View style={styles.appointmentDetails}>
+                  <Text style={styles.appointmentText}>Hora: {item.timeSlot}</Text>
+                  <Text style={styles.appointmentText}>Paciente: {item.patientName}</Text>
+                </View>
+                <TouchableOpacity style={styles.infoButton} onPress={() => navigation.navigate('AppointmentInfo', { appointmentId: item.id })}>
+                  <FontAwesomeIcon icon={faInfoCircle} size={24} color="#2260ff" />
+                </TouchableOpacity>
               </View>
-            </View>
-          )}
-        />
+            )}
+          />
+        ) : (
+          <Text style={styles.noAppointmentsText}>No tienes citas programadas para hoy</Text>
+        )}
       </View>
     </ScrollView>
   );
@@ -41,16 +76,39 @@ export default function DoctorDashboard() {
 // Styles
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     padding: 20,
-    backgroundColor: '#FFFFFF',
+    alignSelf: 'center',
+    width: '100%',
+    maxWidth: 500,
+    backgroundColor: '#ffffff',
   },
-  title: {
-    fontSize: 24,
+  welcomeText: {
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#2260ff',
     marginBottom: 20,
     textAlign: 'center',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  actionButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#6580de',
+    borderRadius: 8,
+    paddingVertical: 10,
+    marginHorizontal: 5,
+  },
+  buttonText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginTop: 5,
   },
   card: {
     backgroundColor: '#ecf1ff',
@@ -64,6 +122,11 @@ const styles = StyleSheet.create({
     color: '#2260ff',
     marginBottom: 10,
   },
+  dateText: {
+    fontSize: 16,
+    color: '#666666',
+    marginBottom: 10,
+  },
   appointmentContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -72,17 +135,24 @@ const styles = StyleSheet.create({
   icon: {
     marginRight: 10,
   },
-  patientName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2260ff',
+  appointmentDetails: {
+    flex: 1,
   },
-  appointmentTime: {
+  appointmentText: {
     fontSize: 16,
     color: '#000000',
   },
-  reason: {
+  infoButton: {
+    padding: 10,
+  },
+  noAppointmentsText: {
     fontSize: 16,
-    color: '#666666',
+    color: '#999999',
+    textAlign: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#999999',
+    textAlign: 'center',
   },
 });

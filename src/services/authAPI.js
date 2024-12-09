@@ -44,7 +44,6 @@ const decodeJWT = (token) => {
   
       // Decodificamos el payload usando Base64.decode
       const decodedPayload = JSON.parse(Base64.decode(base64));
-      console.log(decodedPayload); // Para depurar y ver el contenido del payload
       return decodedPayload;
     } catch (error) {
       console.error("Error al decodificar el token manualmente", error);
